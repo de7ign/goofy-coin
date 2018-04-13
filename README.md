@@ -1,0 +1,2 @@
+# goofycoin
+A simple cryptocurrency
