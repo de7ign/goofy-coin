@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Goofy Coin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Nihal Murmu">
+    <meta name="email" content="nhlmrm@gmail.com">
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <h3 align="center" >Goofy Coin</h3>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="four columns">
+                <label for="publicKeySelect">Select your Public Key</label>
+                <select class="u-full-width" name="senderPkeySelect" id="senderPkeySelect">
+                    <option value=0>Select</option>
+                    <option value=1>Create New Public Key</option>
+                </select>
+                <div id="create">
+                </div>
+                <label for="receivePublickKeySelect">Select receiver Public Key</label>
+                <select class="u-full-width" name="receiverPkeySelect" id="receiverPkeySelect">
+                    <option value=0>Select</option>
+                </select>
+                <input type="button" class="button-primary u-full-width" value="Send" />
+            </div>
+            <div class="eight columns" id="txTable">
+                <table class="u-full-width">
+                    <thead>
+                        <tr>
+                            <th width="10%" >sl no.</th>
+                            <th width="20%">Date & Time</th>
+                            <th width="35%">Sender</th>
+                            <th width="35%">Receiver</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="/js/api.js"></script>
+</body>
+</html>
