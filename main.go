@@ -26,8 +26,8 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", reqLogger(indexHandler))
 	http.HandleFunc("/dashboard", reqLogger(dashboardHandler))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./static/js"))))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./static/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./assets/js"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/css"))))
 	log.Printf("App running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
