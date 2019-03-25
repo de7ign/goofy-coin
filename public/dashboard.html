@@ -18,21 +18,43 @@
         </div>
         <div class="row">
             <div class="four columns">
+                <h5>User</h5>
+                <!--
+                    CreateUser should only be available to Goofy only
+                -->
                 <label for="createUser">Create a User</label>
-                <input type="text" class="u-full-width" placeholder="User Name"/>
-                <input type="button" class="u-full-width button-primary" value="Create"/>
+                <input type="text" class="u-full-width" placeholder="User Name" id="createUser"/>
+                <input type="button" class="u-full-width button-primary" value="Create" onclick="createUser()"/>
 
-                <label for="publicKeySelect">Select your Public Key</label>
+                <!--
+                    this section is needed when we will isolate Goofy with other user
+                -->
+                <!-- <label for="createUser">Select a User</label>
+                <select class="u-full-width" name="selectUser" id="selectUser">
+                    <option value=0>Select</option>
+                </select>
+                -->
+
+                <hr>
+
+                <h5>Transaction</h5>
+
+                <!--
+                    createCoin part should only be available to Goofy only
+                -->
+                <label for="createCoin">Create Coin</label>
+                <input type="text" class="u-full-width" placeholder="Enter amount" id="createCoin"/>
+                <input type="button" class="u-full-width button-primary" value="Create" onclick="createCoin()"/>
+
+                <label for="publicKeySelect">Select Sender</label>
                 <select class="u-full-width" name="senderPkeySelect" id="senderPkeySelect">
                     <option value=0>Select</option>
                 </select>
-                <div id="create">
-                </div>
-                <label for="receivePublickKeySelect">Select receiver Public Key</label>
+                <label for="receivePublickKeySelect">Select Receiver</label>
                 <select class="u-full-width" name="receiverPkeySelect" id="receiverPkeySelect">
                     <option value=0>Select</option>
                 </select>
-                <input type="button" class="button-primary u-full-width" value="Send" />
+                <input type="button" class="button-primary u-full-width" value="Send" onclick="createTx()"/>
             </div>
             <div class="eight columns" id="txTable">
                 <table class="u-full-width">
