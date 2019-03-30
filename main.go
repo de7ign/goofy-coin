@@ -5,6 +5,7 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"log"
+	"math/big"
 	"net/http"
 	"time"
 )
@@ -15,7 +16,20 @@ func generateKeyPair() (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {
 		return nil, nil, err
 	}
 	publicKey := &privateKey.PublicKey
-	return privateKey, publicKey, nil
+	return privateKey, publicKey, err
+}
+
+func signTx(priv *ecdsa.PrivateKey, payload []byte) (*big.Int, *big.Int, error) {
+	r, s, err := ecdsa.Sign(rand.Reader, priv, payload)
+	if err != nil {
+		return nil, nil, err
+	}
+	return r, s, err
+}
+
+func verifyTx(pub *ecdsa.PublicKey, payload []byte, r, s *big.Int) bool {
+	flag := ecdsa.Verify(pub, payload, r, s)
+	return flag
 }
 
 func reqLogger(next http.HandlerFunc) http.HandlerFunc {
@@ -27,6 +41,7 @@ func reqLogger(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r)
 	}
 }
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/index.html")
 }
@@ -40,8 +55,17 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 	}
-	log.Print("private key ",priv)
+	log.Print("private key ", priv)
 	log.Print("public key ", pub)
+
+	payload := []byte("abcdefghijklmnopqrstuvwxyz")
+	p, q, err := signTx(priv, payload)
+	if err != nil {
+		log.Printf("cannot sign payload")
+	}
+	res := verifyTx(pub, payload, p, q)
+	log.Print("res ", res)
+
 }
 
 func main() {
