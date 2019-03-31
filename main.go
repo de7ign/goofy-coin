@@ -1,11 +1,23 @@
 package main
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 	"log"
+	"math/big"
 	"net/http"
 	"time"
 )
 
+/*
+	reqLogger logs the attributes
+	1. Time
+	2. HTTP verb
+	3. Requested URI
+	4. Remote Address
+	of an incoming request
+*/
 func reqLogger(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Request Time %s ", time.Now())
@@ -15,6 +27,43 @@ func reqLogger(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r)
 	}
 }
+
+/*
+	Crypto Utilities
+	___________________________________________________________________________
+*/
+
+/*
+	generateKeyPair() generate a private and public key pair based on ECDSA
+*/
+func generateKeyPair() (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return nil, nil, err
+	}
+	publicKey := &privateKey.PublicKey
+	return privateKey, publicKey, err
+}
+
+/*
+	signTx() signs the payload with the provided private key
+*/
+func signTx(priv *ecdsa.PrivateKey, payload []byte) (*big.Int, *big.Int, error) {
+	r, s, err := ecdsa.Sign(rand.Reader, priv, payload)
+	if err != nil {
+		return nil, nil, err
+	}
+	return r, s, err
+}
+
+/*
+	verifyTx() verify the payload against the provided public key
+*/
+func verifyTx(pub *ecdsa.PublicKey, payload []byte, r, s *big.Int) bool {
+	flag := ecdsa.Verify(pub, payload, r, s)
+	return flag
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/index.html")
 }
