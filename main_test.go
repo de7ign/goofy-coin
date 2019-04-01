@@ -26,3 +26,42 @@ func TestSignVerify(t *testing.T) {
 		t.Error("verification failed")
 	}
 }
+
+func TestUserUtilities(t *testing.T) {
+	err := createUser([]byte("goofy"))
+	if err != nil {
+		t.Error("cannot create user")
+	}
+	err = createUser([]byte("alice"))
+	if err != nil {
+		t.Error("cannot create user")
+	}
+	err = createUser([]byte("bob"))
+	if err != nil {
+		t.Error("cannot create user")
+	}
+	err = createUser([]byte("claire"))
+	if err != nil {
+		t.Error("cannot create user")
+	}
+	err = createUser([]byte("dave"))
+	if err != nil {
+		t.Error("cannot create user")
+	}
+
+	priv, err := getPrivateKey(userList[0].uuid)
+	if err != nil {
+		t.Error(err)
+	}
+	if userList[0].privateKey != priv {
+		t.Error("Private key doesnt match")
+	}
+
+	pub, err := getPublicKey(userList[0].uuid)
+	if err != nil {
+		t.Error(err)
+	}
+	if userList[0].publicKey != pub {
+		t.Error("Public key doesnt match")
+	}
+}
