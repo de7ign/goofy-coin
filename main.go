@@ -121,6 +121,9 @@ func getPublicKey(uuid uuid.UUID) (*ecdsa.PublicKey, error) {
 	return nil, errors.New("user not found")
 }
 
+/*
+	getUserName() returns name with provided uuid
+*/
 func getUserName(uuid uuid.UUID) ([]byte, error) {
 	for _, u := range userList {
 		if u.uuid == uuid {
@@ -130,21 +133,25 @@ func getUserName(uuid uuid.UUID) ([]byte, error) {
 	return nil, errors.New("user not found")
 }
 
+/*
+	indexHandler serves '/' endpoint
+*/
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/index.html")
 }
 
+/*
+	dashboardHandler serves '/dashboard' endpoint
+*/
 func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/dashboard.html")
 }
 
 func main() {
-	createUser([]byte("nihal"))
 	http.HandleFunc("/", reqLogger(indexHandler))
 	http.HandleFunc("/dashboard", reqLogger(dashboardHandler))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./assets/js"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/css"))))
 	log.Printf("App running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
-	createUser([]byte("nihal"))
 }
