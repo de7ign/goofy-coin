@@ -1,15 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha256"
+	"errors"
 	"log"
 	"math/big"
 	"net/http"
+	"strconv"
 	"time"
+
 	"github.com/gofrs/uuid"
-	"errors"
 )
 
 type user struct {
@@ -20,6 +24,19 @@ type user struct {
 }
 
 var userList []user
+
+type transaction struct {
+	timeStamp int64
+	txMessage []byte
+	prevHash  []byte
+	currHash  []byte
+}
+
+type block struct {
+	Tx []*transaction
+}
+
+var blk block
 
 /*
 	reqLogger logs the attributes
@@ -131,6 +148,57 @@ func getUserName(uuid uuid.UUID) ([]byte, error) {
 		}
 	}
 	return nil, errors.New("user not found")
+}
+
+/*
+	Transaction Utilities
+	___________________________________________________________________________
+*/
+
+/*
+	createCoin() creates a payload for creating Tx and updates the values if Tx is successful
+*/
+func createCoin(sender *uuid.UUID, receiver *uuid.UUID, amount int) ([]byte, error) {
+	if sender == &userList[0].uuid && receiver == nil {
+		// goofy created a coin
+		uuid, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+		/*
+			Update coin value in user account
+		*/
+		message := [][]byte{[]byte("Goofy created"), []byte(strconv.Itoa(amount)), []byte("goofy coins with uuid"), []byte(uuid.String())}
+		payload := bytes.Join(message, []byte(" "))
+		return payload, nil
+	}
+
+	/*
+		need info of coin object, which coin sender is transferring to receiver
+	*/
+	senderName, err := getUserName(*sender)
+	if err != nil {
+		return nil, err
+	}
+	receiverName, err := getUserName(*receiver)
+	if err != nil {
+		return nil, err
+	}
+	message := [][]byte{senderName, []byte("paid"), receiverName, []byte(strconv.Itoa(amount)), []byte("goofy coins")}
+	payload := bytes.Join(message, []byte(" "))
+	return payload, nil
+}
+
+/*
+	createTx() appends the payload to Tx slice
+*/
+func createTx(payload []byte, prevHash []byte) {
+	Tx := &transaction{timeStamp: time.Now().Unix(), txMessage: payload, prevHash: prevHash}
+	timestamp := []byte(strconv.FormatInt(Tx.timeStamp, 10))
+	txData := bytes.Join([][]byte{timestamp, Tx.txMessage, Tx.prevHash}, []byte{})
+	hash := sha256.Sum256(txData)
+	Tx.currHash = hash[:]
+	blk.Tx = append(blk.Tx, Tx)
 }
 
 /*
