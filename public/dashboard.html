@@ -1,76 +1,121 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Goofy Coin</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Nihal Murmu">
-    <meta name="email" content="nhlmrm@gmail.com">
-    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Nihal Murmu" />
+    <meta name="email" content="nhlmrm@gmail.com" />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
     <div class="container">
-        <div class="row">
-            <h3 align="center" >Goofy Coin</h3>
-            <hr>
+      <div class="row">
+        <h3 align="center">Goofy Coin</h3>
+        <hr />
+      </div>
+      <div class="row">
+        <div class="four columns">
+          <h5>User</h5>
+          <!--
+            CreateUser should only be available to Goofy only
+          -->
+          <label for="createUser">Create a User</label>
+          <h6 class="error" id="createUserError"></h6>
+          <input
+            type="text"
+            class="u-full-width"
+            placeholder="User Name"
+            id="createUser"
+          />
+          <input
+            type="button"
+            class="u-full-width button-primary"
+            value="Create"
+            onclick="createUser()"
+          />
+
+          <!-- by default it should be goofy -->
+          <label for="createUser">Change User</label>
+          <select class="u-full-width" name="selectUser" id="selectUser">
+            <option value="0">Goofy</option>
+          </select>
+
+          <hr />
+
+          <h5>Transaction</h5>
+
+          <!--
+            createCoin part should only be available to Goofy only
+          -->
+          <label for="createCoin">Create Coin</label>
+          <h6 class="error" id="createCoinError"></h6>
+
+          <input
+            type="text"
+            class="u-full-width"
+            placeholder="Enter amount"
+            id="createCoin"
+          />
+          <input
+            type="button"
+            class="u-full-width button-primary"
+            value="Create"
+            onclick="createCoin()"
+          />
+
+          <!-- <label for="publicKeySelect">Select Sender</label>
+          <select
+            class="u-full-width"
+            name="senderPkeySelect"
+            id="senderPkeySelect"
+          >
+            <option value="0">Select</option>
+          </select> -->
+
+          <label for="receiverPublickKeySelect">Pay Goofy Coin</label>
+          <h6 class="error" id="payCoinError"></h6>
+          <select
+            class="u-full-width"
+            name="receiverPkeySelect"
+            id="receiverPkeySelect"
+          >
+            <option value="0">Select Receiver</option>
+          </select>
+          <input
+            type="text"
+            class="u-full-width"
+            placeholder="Enter amount"
+            id="payAmount"
+          />
+          <input
+            type="button"
+            class="button-primary u-full-width"
+            value="Pay"
+            onclick="createTx()"
+          />
         </div>
-        <div class="row">
-            <div class="four columns">
-                <h5>User</h5>
-                <!--
-                    CreateUser should only be available to Goofy only
-                -->
-                <label for="createUser">Create a User</label>
-                <input type="text" class="u-full-width" placeholder="User Name" id="createUser"/>
-                <input type="button" class="u-full-width button-primary" value="Create" onclick="createUser()"/>
-
-                <!--
-                    this section is needed when we will isolate Goofy with other user
-                -->
-                <!-- <label for="createUser">Select a User</label>
-                <select class="u-full-width" name="selectUser" id="selectUser">
-                    <option value=0>Select</option>
-                </select>
-                -->
-
-                <hr>
-
-                <h5>Transaction</h5>
-
-                <!--
-                    createCoin part should only be available to Goofy only
-                -->
-                <label for="createCoin">Create Coin</label>
-                <input type="text" class="u-full-width" placeholder="Enter amount" id="createCoin"/>
-                <input type="button" class="u-full-width button-primary" value="Create" onclick="createCoin()"/>
-
-                <label for="publicKeySelect">Select Sender</label>
-                <select class="u-full-width" name="senderPkeySelect" id="senderPkeySelect">
-                    <option value=0>Select</option>
-                </select>
-                <label for="receivePublickKeySelect">Select Receiver</label>
-                <select class="u-full-width" name="receiverPkeySelect" id="receiverPkeySelect">
-                    <option value=0>Select</option>
-                </select>
-                <input type="button" class="button-primary u-full-width" value="Send" onclick="createTx()"/>
-            </div>
-            <div class="eight columns" id="txTable">
-                <table class="u-full-width">
-                    <thead>
-                        <tr>
-                            <th width="10%" >sl no.</th>
-                            <th width="20%">Date & Time</th>
-                            <th width="35%">Sender</th>
-                            <th width="35%">Receiver</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+        <div class="eight columns" id="txTable">
+          <table class="u-full-width">
+            <thead>
+              <tr>
+                <th width="10%">sl no.</th>
+                <th width="20%">Date & Time</th>
+                <th width="35%">Sender</th>
+                <th width="35%">Receiver</th>
+              </tr>
+            </thead>
+          </table>
         </div>
+      </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
     <script type="text/javascript" src="/js/script.js"></script>
-</body>
+  </body>
 </html>
