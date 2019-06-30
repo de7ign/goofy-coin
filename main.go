@@ -6,7 +6,9 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"net/http"
@@ -215,9 +217,78 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./public/dashboard.html")
 }
 
+/*
+	Exposed APIs
+	___________________________________________________________________________
+*/
+
+func userAPI(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		type payload struct {
+			UserName string `json:"userName"`
+		}
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(""))
+		}
+
+		var data payload
+		err = json.Unmarshal(body, &data)
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(""))
+		}
+
+		err = createUser([]byte(data.UserName))
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(""))
+		}
+	}
+}
+
+// func testHandler(w http.ResponseWriter, r *http.Request) {
+// 	type payload struct {
+// 		UserName string `json:"userName"`
+// 	}
+// 	body, err := ioutil.ReadAll(r.Body)
+// 	if err != nil {
+// 		log.Print(err)
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		w.Write([]byte(""))
+// 	}
+
+// 	var data payload
+// 	err = json.Unmarshal(body, &data)
+// 	if err != nil {
+// 		log.Print(err)
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte(""))
+// 	}
+
+// 	err = createUser([]byte(data.UserName))
+// 	if err != nil {
+// 		log.Print(err)
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		w.Write([]byte(""))
+// 	}
+
+// 	for _, user := range userList {
+// 		log.Print(user.uuid)
+// 		log.Printf("%s", user.name)
+// 		log.Printf("%x", user.privateKey)
+// 		log.Printf("%x", user.publicKey)
+// 	}
+// }
+
 func main() {
 	http.HandleFunc("/", reqLogger(indexHandler))
 	http.HandleFunc("/dashboard", reqLogger(dashboardHandler))
+	http.HandleFunc("/test", reqLogger(userAPI))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./assets/js"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/css"))))
 	log.Printf("App running on port 8080")

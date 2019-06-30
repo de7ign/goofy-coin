@@ -2,7 +2,7 @@
  *  createUser() takes the text from the respective input box
  *  and do a request to backend with the text for user creation
  */
-createUser = () => {
+function createUser() {
   // check: username can only be alphanumeric
   const alphaNumericPattern = /^([0-9]|[a-z]|[0-9a-z]+)$/i;
   const spacePattern = /\s+/g;
@@ -23,8 +23,18 @@ createUser = () => {
   } else {
     // send request to backend
     document.getElementById("createUserError").innerText = "";
+    let payload = {};
+    payload.userName = userName;
+
+    request("http://localhost:8080/user", payload)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
-};
+}
 
 /**
  *  createCoin() can only be called by 'goofy'.
@@ -33,7 +43,7 @@ createUser = () => {
  *  to create goofy coins and do a request to backend with the amount
  *  for creation of given goofy coins and transferred to goofy a/c
  */
-createCoin = () => {
+function createCoin() {
   // check: current user is goofy or not
   const sel = document.getElementById("selectUser");
   if (sel.options[sel.selectedIndex].text !== "Goofy") {
@@ -64,7 +74,7 @@ createCoin = () => {
     // send request to backend
     document.getElementById("createCoinError").innerText = "";
   }
-};
+}
 
 /**
  *  createTx() takes receiver name and amount to transfer
@@ -72,7 +82,7 @@ createCoin = () => {
  *  createTx() transfer goofy coins from current user in user section
  *  and transfer to the a/c of selected receiver user selected
  */
-createTx = () => {
+function createTx() {
   // check: receiver is selected or not
   const receiverSelection = document.getElementById("receiverPkeySelect");
   let receiver =
@@ -108,4 +118,23 @@ createTx = () => {
     // send request to backend
     document.getElementById("payCoinError").innerText = "";
   }
-};
+}
+
+/**
+ *  request() is a wrapper around axios post request call
+ *
+ *  @param {string} url   url where you want request to
+ *  @param {Object} data  json data sent to url provided
+ *
+ *  @returns {pro} returns a promise for whichever callback is executed
+ */
+function request(url, data) {
+  return axios
+    .post(url, data)
+    .then(function(response) {
+      return response;
+    })
+    .catch(function(error) {
+      return error.response;
+    });
+}
