@@ -1,3 +1,5 @@
+'esversion: 6'
+
 /**
  *  createUser() takes the text from the respective input box
  *  and do a request to backend with the text for user creation
