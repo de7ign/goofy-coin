@@ -19,8 +19,8 @@ import (
 )
 
 type user struct {
-	uuid       uuid.UUID
-	name       []byte
+	UUID       uuid.UUID `json:"uuid"`
+	Name       string    `json:"name"`
 	privateKey *ecdsa.PrivateKey
 	publicKey  *ecdsa.PublicKey
 }
@@ -102,7 +102,7 @@ func verifyTx(pub *ecdsa.PublicKey, payload []byte, r, s *big.Int) bool {
 /*
 	createUser() creates a user and append it to userList slice
 */
-func createUser(name []byte) error {
+func createUser(name string) error {
 	uuid, err := uuid.NewV4()
 	if err != nil {
 		return err
@@ -111,7 +111,11 @@ func createUser(name []byte) error {
 	if err != nil {
 		return err
 	}
-	u := user{uuid: uuid, name: name, privateKey: privKey, publicKey: pubKey}
+	u := user{UUID: uuid, Name: name, privateKey: privKey, publicKey: pubKey}
+
+	payload, _ := json.Marshal(u)
+	log.Printf(string(payload))
+
 	userList = append(userList, u)
 	return nil
 }
@@ -121,7 +125,7 @@ func createUser(name []byte) error {
 */
 func getPrivateKey(uuid uuid.UUID) (*ecdsa.PrivateKey, error) {
 	for _, u := range userList {
-		if u.uuid == uuid {
+		if u.UUID == uuid {
 			return u.privateKey, nil
 		}
 	}
@@ -133,7 +137,7 @@ func getPrivateKey(uuid uuid.UUID) (*ecdsa.PrivateKey, error) {
 */
 func getPublicKey(uuid uuid.UUID) (*ecdsa.PublicKey, error) {
 	for _, u := range userList {
-		if u.uuid == uuid {
+		if u.UUID == uuid {
 			return u.publicKey, nil
 		}
 	}
@@ -143,13 +147,13 @@ func getPublicKey(uuid uuid.UUID) (*ecdsa.PublicKey, error) {
 /*
 	getUserName() returns name with provided uuid
 */
-func getUserName(uuid uuid.UUID) ([]byte, error) {
+func getUserName(uuid uuid.UUID) (string, error) {
 	for _, u := range userList {
-		if u.uuid == uuid {
-			return u.name, nil
+		if u.UUID == uuid {
+			return u.Name, nil
 		}
 	}
-	return nil, errors.New("user not found")
+	return "", errors.New("user not found")
 }
 
 /*
@@ -161,7 +165,7 @@ func getUserName(uuid uuid.UUID) ([]byte, error) {
 	createCoin() creates a payload for creating Tx and updates the values if Tx is successful
 */
 func createCoin(sender *uuid.UUID, receiver *uuid.UUID, amount int) ([]byte, error) {
-	if sender == &userList[0].uuid && receiver == nil {
+	if sender == &userList[0].UUID && receiver == nil {
 		// goofy created a coin
 		uuid, err := uuid.NewV4()
 		if err != nil {
@@ -186,7 +190,7 @@ func createCoin(sender *uuid.UUID, receiver *uuid.UUID, amount int) ([]byte, err
 	if err != nil {
 		return nil, err
 	}
-	message := [][]byte{senderName, []byte("paid"), receiverName, []byte(strconv.Itoa(amount)), []byte("goofy coins")}
+	message := [][]byte{[]byte(senderName), []byte("paid"), []byte(receiverName), []byte(strconv.Itoa(amount)), []byte("goofy coins")}
 	payload := bytes.Join(message, []byte(" "))
 	return payload, nil
 }
@@ -242,7 +246,7 @@ func userAPI(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte(""))
 		}
 
-		err = createUser([]byte(data.UserName))
+		err = createUser(data.UserName)
 		if err != nil {
 			log.Print(err)
 			w.WriteHeader(http.StatusInternalServerError)
