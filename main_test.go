@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 )
 
 func TestGenerateKeyPair(t *testing.T) {
@@ -29,28 +29,28 @@ func TestSignVerify(t *testing.T) {
 }
 
 func TestUserUtilities(t *testing.T) {
-	err := createUser([]byte("goofy"))
+	err := createUser("goofy")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("alice"))
+	err = createUser("alice")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("bob"))
+	err = createUser("bob")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("claire"))
+	err = createUser("claire")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("dave"))
+	err = createUser("dave")
 	if err != nil {
 		t.Error("cannot create user")
 	}
 
-	priv, err := getPrivateKey(userList[0].uuid)
+	priv, err := getPrivateKey(userList[0].UUID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -58,7 +58,7 @@ func TestUserUtilities(t *testing.T) {
 		t.Error("Private key doesnt match")
 	}
 
-	pub, err := getPublicKey(userList[0].uuid)
+	pub, err := getPublicKey(userList[0].UUID)
 	if err != nil {
 		t.Error(err)
 	}
@@ -71,34 +71,34 @@ func TestTransaction(t *testing.T) {
 	/*
 		creating user for transaction purpose
 	*/
-	err := createUser([]byte("goofy"))
+	err := createUser("goofy")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("alice"))
+	err = createUser("alice")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("bob"))
+	err = createUser("bob")
 	if err != nil {
 		t.Error("cannot create user")
 	}
-	err = createUser([]byte("claire"))
+	err = createUser("claire")
 	if err != nil {
 		t.Error("cannot create user")
 	}
 
-	payload, err := createCoin(&userList[0].uuid, nil, 10)
+	payload, err := createCoin(&userList[0].UUID, nil, 10)
 	if err != nil {
 		t.Error("cannot create payload")
 	}
 	createTx(payload, nil)
-	payload, err = createCoin(&userList[1].uuid, &userList[2].uuid, 10)
+	payload, err = createCoin(&userList[1].UUID, &userList[2].UUID, 10)
 	if err != nil {
 		t.Error("cannot create payload")
 	}
 	createTx(payload, blk.Tx[len(blk.Tx)-1].currHash)
-	payload, err = createCoin(&userList[2].uuid, &userList[3].uuid, 10)
+	payload, err = createCoin(&userList[2].UUID, &userList[3].UUID, 10)
 	if err != nil {
 		t.Error("cannot create payload")
 	}
