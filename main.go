@@ -252,6 +252,15 @@ func userAPI(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(""))
 		}
+	} else if r.Method == "GET" {
+		payload, err := json.Marshal(userList)
+		if err != nil {
+			log.Print(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(""))
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(payload)
 	}
 }
 
@@ -292,7 +301,7 @@ func userAPI(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", reqLogger(indexHandler))
 	http.HandleFunc("/dashboard", reqLogger(dashboardHandler))
-	http.HandleFunc("/test", reqLogger(userAPI))
+	http.HandleFunc("/api/user", reqLogger(userAPI))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./assets/js"))))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets/css"))))
 	log.Printf("App running on port 8080")
