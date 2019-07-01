@@ -145,9 +145,9 @@ func getPublicKey(uuid uuid.UUID) (*ecdsa.PublicKey, error) {
 }
 
 /*
-	getUserName() returns name with provided uuid
+	getUser() returns name with provided uuid
 */
-func getUserName(uuid uuid.UUID) (string, error) {
+func getUser(uuid uuid.UUID) (string, error) {
 	for _, u := range userList {
 		if u.UUID == uuid {
 			return u.Name, nil
@@ -172,6 +172,7 @@ func createCoin(sender *uuid.UUID, receiver *uuid.UUID, amount int) ([]byte, err
 			return nil, err
 		}
 		/*
+			#TODO
 			Update coin value in user account
 		*/
 		message := [][]byte{[]byte("Goofy created"), []byte(strconv.Itoa(amount)), []byte("goofy coins with uuid"), []byte(uuid.String())}
@@ -182,11 +183,11 @@ func createCoin(sender *uuid.UUID, receiver *uuid.UUID, amount int) ([]byte, err
 	/*
 		need info of coin object, which coin sender is transferring to receiver
 	*/
-	senderName, err := getUserName(*sender)
+	senderName, err := getUser(*sender)
 	if err != nil {
 		return nil, err
 	}
-	receiverName, err := getUserName(*receiver)
+	receiverName, err := getUser(*receiver)
 	if err != nil {
 		return nil, err
 	}
@@ -233,35 +234,33 @@ func userAPI(w http.ResponseWriter, r *http.Request) {
 		}
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte(""))
+			apiLogger(w, err, http.StatusBadRequest)
 		}
 
 		var data payload
 		err = json.Unmarshal(body, &data)
 		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(""))
+			apiLogger(w, err, http.StatusInternalServerError)
 		}
 
 		err = createUser(data.UserName)
 		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(""))
+			apiLogger(w, err, http.StatusInternalServerError)
 		}
 	} else if r.Method == "GET" {
 		payload, err := json.Marshal(userList)
 		if err != nil {
-			log.Print(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(""))
+			apiLogger(w, err, http.StatusInternalServerError)
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write(payload)
 	}
+}
+
+func apiLogger(w http.ResponseWriter, err error, status int) {
+	log.Print(err)
+	w.WriteHeader(status)
+	w.Write([]byte(""))
 }
 
 // func testHandler(w http.ResponseWriter, r *http.Request) {
