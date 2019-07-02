@@ -232,17 +232,26 @@ func userAPI(w http.ResponseWriter, r *http.Request) {
 		type payload struct {
 			UserName string `json:"userName"`
 		}
+
+		// read the request body
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			apiLogger(w, err, http.StatusBadRequest)
 		}
 
+		// encode the body to json of struct payload
 		var data payload
 		err = json.Unmarshal(body, &data)
 		if err != nil {
 			apiLogger(w, err, http.StatusInternalServerError)
 		}
 
+		// check if all the required json fields are there.
+		if data.UserName == "" {
+			apiLogger(w, err, http.StatusBadRequest)
+		}
+
+		// create the USer
 		err = createUser(data.UserName)
 		if err != nil {
 			apiLogger(w, err, http.StatusInternalServerError)
